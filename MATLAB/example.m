@@ -23,4 +23,16 @@ disp(constellation.state.eci(satIdx, :, epochIdx));
 % Координаты случайного КА (в осях, связанных с вращающейся Землёй) можно прочитать из constellation.state.ecef
 disp(['Положение КА-' num2str(satIdx) ' на эпоху ' num2str(epochs(epochIdx)) ' в ECEF:']);
 disp(constellation.state.ecef(satIdx, :, epochIdx));
+
+% Расчёт скоростей аппратаов на каждую эпоху
+constellation.velocityJ2(epochs);
+
+% Получение информации об аппаратах в зоне видимости
+dataMap = VisibleFunction(constellation, epochs, epochIdx);
+
+% Вывод данных для пары шлюзовая станция-КА на эпоху
+gateCount = length(jsondecode(fileread('gatewaysTest.json')));
+satCount = constellation.totalSatCount;
+Visualization(dataMap, gateCount, satCount, epochs(epochIdx));
+
 toc

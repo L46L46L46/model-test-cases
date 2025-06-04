@@ -121,5 +121,26 @@ classdef Constellation < handle
                 this.state.ecef(:, :, epochIdx) = (rotationMatrix * this.state.eci(:, :, epochIdx)')';
             end
         end
+
+        function velocityJ2(this, epochs)
+            this.state.velocityEci = zeros(this.totalSatCount, 3, length(epochs));
+
+            sma         = this.state.elements(:, 1);
+            inclination = this.state.elements(:, 5);            
+            raan0       = this.state.elements(:, 4);
+            aol0        = this.state.elements(:, 6);
+
+            raanPrecessionRate = -1.5 * (this.earthJ2 * this.earthGM^(1/2) * this.earthRadius^2) ./ (sma.^(7/2)) .* cos(inclination);
+            draconicOmega      = sqrt(this.earthGM ./ sma.^3) .* (1 - 1.5 * this.earthJ2 .* (this.earthRadius ./ sma).^2) .* (1 - 4 .* cos(inclination).^2);
+            velocityAbs = sqrt(this.earthGM ./ sma);
+
+            for epochIdx = 1:length(epochs)
+                aol = aol0 + epochs(epochIdx) * draconicOmega;
+                raanOmega = raan0 + epochs(epochIdx) * raanPrecessionRate;
+                this.state.velocityEci(:, :, epochIdx)  = [velocityAbs .* (-sin(aol) .* cos(raanOmega) - cos(aol) .* cos(inclination) .* sin(raanOmega)), ...
+                                                           velocityAbs .* (-sin(aol) .* sin(raanOmega) + cos(aol) .* cos(inclination) .* cos(raanOmega)), ...
+                                                           velocityAbs .* (cos(aol) .* sin(inclination))];
+            end
+        end
     end
 end
