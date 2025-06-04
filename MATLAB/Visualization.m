@@ -1,3 +1,11 @@
+%   Функция выводит основные параметры для заданного номера аппарата и
+%   шлюзовой станции, если аппарат находится в зоне видимости шлюзовой
+%   станции на заданную эпоху.
+%   Выходные данные: структура данных dataMap с информацей о парах
+%   "шлюзовая станция - аппарат в зоне видимости", число шлюзовых станций
+%   gateCount, число аппаратов satCount и эпоха, на которую производились
+%   расчёты.
+
 function[] = Visualization(dataMap, gateCount, satCount, epoch)
     prompt = "Хотите ли Вы использовать свои значения индексов КА и шлюзовой станции (Y),\nзаданные заранее значения (P) или случайные значения (R)? Y/P/R [P]: ";
     txt = input(prompt, "s");
@@ -25,7 +33,7 @@ function[] = Visualization(dataMap, gateCount, satCount, epoch)
         gateIdx = str2double(gateSatIdx{1});
         satIdx = str2double(gateSatIdx{2});
     end
-    checkKey = strcat('Gate_', num2str(gateIdx),', Sat_', num2str(satIdx));
+    checkKey = strcat('Gate_', num2str(gateIdx),'_Sat_', num2str(satIdx));
     if dataMap.isKey(checkKey)
         value = dataMap(checkKey);
         disp(['На эпоху ', num2str(epoch), ' КА ', num2str(satIdx), ' находится в зоне видимости шлюзовой станции ', num2str(gateIdx)]);

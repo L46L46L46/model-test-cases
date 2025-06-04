@@ -30,9 +30,17 @@ constellation.velocityJ2(epochs);
 % Получение информации об аппаратах в зоне видимости
 dataMap = VisibleFunction(constellation, epochs, epochIdx);
 
+% Запись данных в json-файл
+
+container2json(dataMap, 'gatewaySatVisible.json');
+
+disp('Для заданной эпохи найдены аппараты, находящиеся в зоне видимости шлюзовых станций.');
+disp('Для каждой пары станция-аппарат определена ориентация антены, расстояние и доплеровский сдвиг.');
+disp('Результат работы алгоритма записан в json-файл');
+toc
+
 % Вывод данных для пары шлюзовая станция-КА на эпоху
+disp('Вывод данных для пары шлюзовая станция-КА на эпоху');
 gateCount = length(jsondecode(fileread('gatewaysTest.json')));
 satCount = constellation.totalSatCount;
 Visualization(dataMap, gateCount, satCount, epochs(epochIdx));
-
-toc

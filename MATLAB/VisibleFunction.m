@@ -1,10 +1,23 @@
-function [dataMap] = VisibleFunction(constellation, epochs, epochIdx)
+%   Функция на заданную эпоху для заданной констеляции и шлюзовых станций
+%   опрделяет, набор аппаратов, которые находятся в зоне видимости каждой
+%   из шлюзовых станций. Помимо этого, для каждой пары станция-аппарат
+%   определются ориентация антены, расстояние между станцией и аппаратом,
+%   а так же доплеровский сдвиг частоты радиосигнала.
+%   Выходные данные: данные о констеляции - constellation, набор эпох -
+%   epochs и индекс эпохи - epochIdx, на который нужно провести вычисления.
+%   Выходные данные: словарь dataMap, содержащий в себе информацию о всех
+%   парах типа "шлюзовая станция - аппарат в зоне её видимости". Словарь
+%   имеет ключ вида 'Gate_14, Sat_26', что значит что в зоне видимости 14-й
+%   шлюзовой станции находится 26-й аппарат. Значениями являются векторы из
+%   четырёх параметров для каждой пары: ориентация антенны
+%   (azimuth-elevation), расстояние (distance) и допплеровский сдвиг
+%   частоты радиосигнала (frequency). 
 
+function [dataMap] = VisibleFunction(constellation, epochs, epochIdx)
 %% Задание параметров
     % параметры задачи
     epsilon = 25;                           % минимальный угол места в градусах
     carryingFrequency = 433e6;              % несущая частота [Hz]
-
     satCount = constellation.totalSatCount; % число аппаратов
     epoch = epochs(epochIdx);               % эпоха, на которую производится расчёт
 
@@ -38,7 +51,7 @@ function [dataMap] = VisibleFunction(constellation, epochs, epochIdx)
         visibleSatCount = size(gatewayStationsData(gateIdx).visibleSatId);
         for satIdxNumber=1:visibleSatCount(2)
             satIdx = gatewayStationsData(gateIdx).visibleSatId(satIdxNumber);
-            keys{end+1} = strcat('Gate_', num2str(gateIdx),', Sat_', num2str(satIdx));
+            keys{end+1} = strcat('Gate_', num2str(gateIdx),'_Sat_', num2str(satIdx));
 
             satCoordinates = constellation.state.eci(satIdx, :, epochIdx);      % радиус-вектор аппарата
             satVelocity = constellation.state.velocityEci(satIdx, :, epochIdx); % вектор скорости аппарата
